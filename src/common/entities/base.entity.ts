@@ -7,12 +7,19 @@ import {
 
 @Entity()
 export abstract class BaseModel {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({
+    type: 'int',
+    unsigned: true,
+  })
   id: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'timestamp',
+  })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'timestamp',
+  })
   updatedAt: Date;
 }
