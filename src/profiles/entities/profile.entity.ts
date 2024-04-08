@@ -1,4 +1,6 @@
+import { IsEnum } from 'class-validator';
 import { BaseModel } from 'src/common/entities/base.entity';
+import { State } from 'src/common/enums/state.enum';
 import { UserModel } from 'src/users/entities/user.entity';
 import { Column, Entity, OneToOne } from 'typeorm';
 
@@ -33,7 +35,12 @@ export class ProfileModel extends BaseModel {
    * 사용자가 일반 학생인지 교환학생인지 체크
    * @example exchange
    */
-  @Column()
+  @IsEnum(State)
+  @Column({
+    type: 'enum',
+    enum: State,
+    default: State.NORMAL,
+  })
   state: string;
 
   /**
