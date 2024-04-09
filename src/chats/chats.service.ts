@@ -29,14 +29,12 @@ export class ChatsService {
     // const recommendedUser = await this.profileRepository.findOne({
     //   where: { state: recommendedState },
     // });
-    console.log(recommendedState);
     const recommendedUser = await this.profileRepository
       .createQueryBuilder('profile')
       .where('profile.state = :recommendedState', { recommendedState })
       .orderBy('RAND()')
       .getOne();
 
-    console.log(recommendedUser);
     return recommendedUser;
   }
 }
