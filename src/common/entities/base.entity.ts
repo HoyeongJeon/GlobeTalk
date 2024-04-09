@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   CreateDateColumn,
   Entity,
@@ -13,11 +14,13 @@ export abstract class BaseModel {
   })
   id: number;
 
+  @Exclude()
   @CreateDateColumn({
     type: 'timestamp',
   })
   createdAt: Date;
 
+  @Exclude()
   @UpdateDateColumn({
     type: 'timestamp',
   })

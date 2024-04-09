@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
@@ -35,6 +36,7 @@ export class UserModel extends BaseModel {
    * @example 'password'
    */
   @IsString()
+  @Exclude()
   @Column()
   password: string;
 
