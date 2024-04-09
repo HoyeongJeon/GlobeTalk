@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { ChatsModule } from './chats/chats.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ProfilesModule } from './profiles/profiles.module';
     AuthModule,
     UsersModule,
     ProfilesModule,
+    ChatsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
