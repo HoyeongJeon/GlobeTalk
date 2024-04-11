@@ -35,7 +35,7 @@ export class AuthService {
     }
   }
 
-  async signup(signUpDto: SignUpDto) {
+  async signup(signUpDto: SignUpDto, imageUrl?: string) {
     const {
       email,
       nickname,
@@ -69,6 +69,7 @@ export class AuthService {
         major,
         language,
         state,
+        imageUrl,
       },
     });
 
