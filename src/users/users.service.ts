@@ -14,6 +14,7 @@ export class UsersService {
     @InjectRepository(ProfileModel)
     private readonly profileRepository: Repository<ProfileModel>,
   ) {}
+
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
       where: {
@@ -26,7 +27,11 @@ export class UsersService {
     return user;
   }
 
-  async editProfile(userId: number, editProfileDto: EditProfileDto) {
+  async editProfile(
+    userId: number,
+    editProfileDto: EditProfileDto,
+    imageUrl?: string,
+  ) {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
@@ -36,8 +41,6 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException('유저가 존재하지 않습니다.');
     }
-
-    console.log(user.Profile);
 
     const profile = await this.profileRepository.findOne({
       where: {
@@ -53,9 +56,11 @@ export class UsersService {
     //     User: user,
     //   },
     // });
+    const upadatedImgUrl = imageUrl ? imageUrl : profile.imageUrl;
     return await this.profileRepository.save({
       ...profile,
       ...editProfileDto,
+      imageUrl: upadatedImgUrl,
     });
   }
 }

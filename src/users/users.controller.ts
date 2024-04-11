@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Request,
+  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -29,7 +30,15 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  async editProfile(@Request() req, @Body() editProfileDto: EditProfileDto) {
-    return await this.usersService.editProfile(req.user.sub, editProfileDto);
+  async editProfile(
+    @Request() req,
+    @Body() editProfileDto: EditProfileDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return await this.usersService.editProfile(
+      req.user.sub,
+      editProfileDto,
+      file?.filename,
+    );
   }
 }
