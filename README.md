@@ -44,3 +44,7 @@ GlobeTalk
 ### 1.3. API 명세서
 
 https://www.notion.so/API-00e6b6316a4643acad1cb50a7b5cec3f?pvs=4
+
+### 1.4. 개발 일정
+
+<img width="842" alt="image" src="https://github.com/HoyeongJeon/GlobeTalk/assets/78394999/60a05d63-2cab-4c63-a00a-4ed8321d5ad7">
