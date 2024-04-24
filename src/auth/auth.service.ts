@@ -30,10 +30,6 @@ export class AuthService {
   }
 
   async duplicatedNicknameCheck(nickname: string) {
-    // const duplicatedNickname = await this.userRepository.findOne({
-    //   where: { nickname },
-    // });
-
     const duplicatedNickname = await this.profileRepository.findOne({
       where: { nickname },
     });

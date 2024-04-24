@@ -41,8 +41,6 @@ export class ChatsService {
     //   },
     // });
 
-    console.log(recommendedUser);
-
     return recommendedUser;
   }
 }
