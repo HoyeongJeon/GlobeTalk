@@ -23,6 +23,7 @@ export class AuthController {
     @Body() signUpDto: SignUpDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
+    console.log(signUpDto);
     const result = await this.authService.signup(signUpDto, file?.filename);
     return {
       status: HttpStatus.OK,

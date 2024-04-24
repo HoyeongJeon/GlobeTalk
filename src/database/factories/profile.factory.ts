@@ -5,6 +5,10 @@ import { setSeederFactory } from 'typeorm-extension';
 export default setSeederFactory(ProfileModel, (faker) => {
   const profile = new ProfileModel();
 
+  profile.nickname = faker.internet.userName();
+  if (profile.nickname.length > 8) {
+    profile.nickname = profile.nickname.slice(0, 8);
+  }
   profile.introduce = faker.lorem.sentence();
   profile.major = faker.lorem.word();
   profile.language = ['ko', 'en', 'de'];
