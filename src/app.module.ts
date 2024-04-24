@@ -10,6 +10,7 @@ import { ProfilesModule } from './profiles/profiles.module';
 import { ChatsModule } from './chats/chats.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MessagesModule } from './messages/messages.module';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { MessagesModule } from './messages/messages.module';
     ProfilesModule,
     ChatsModule,
     MessagesModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [
