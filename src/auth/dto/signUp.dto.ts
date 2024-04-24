@@ -16,7 +16,6 @@ enum State {
 export class SignUpDto extends PickType(UserModel, [
   'email',
   'password',
-  'nickname',
   'country',
 ] as const) {
   @IsString()
@@ -29,6 +28,10 @@ export class SignUpDto extends PickType(UserModel, [
   //     },
   //   )
   passwordConfirm: string;
+
+  @IsString()
+  @IsNotEmpty()
+  nickname: string;
 
   @IsString()
   @IsNotEmpty()

@@ -1,4 +1,4 @@
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { State } from 'src/common/enums/state.enum';
 import { UserModel } from 'src/users/entities/user.entity';
@@ -8,6 +8,18 @@ import { Column, Entity, OneToOne } from 'typeorm';
   name: 'profiles',
 })
 export class ProfileModel extends BaseModel {
+  /**
+   * 사용자의 닉네임
+   * @example 'john'
+   */
+  @IsString()
+  @IsNotEmpty()
+  @Column({
+    unique: true,
+    length: 8, // 닉네임 8자리로 제한
+  })
+  nickname: string;
+
   /**
    * 사용자의 소개글
    * @example Hi ! Im from Germany!

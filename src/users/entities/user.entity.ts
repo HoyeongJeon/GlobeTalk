@@ -20,23 +20,11 @@ export class UserModel extends BaseModel {
   email: string;
 
   /**
-   * 사용자의 닉네임
-   * @example 'john'
-   */
-  @IsString()
-  @IsNotEmpty()
-  @Column({
-    unique: true,
-    length: 8, // 닉네임 8자리로 제한
-  })
-  nickname: string;
-
-  /**
    * 사용자의 비밀번호
    * @example 'password'
    */
   @IsString()
-  @Exclude()
+  // @Exclude()
   @Column()
   password: string;
 

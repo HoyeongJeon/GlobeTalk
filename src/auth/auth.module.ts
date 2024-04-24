@@ -12,10 +12,11 @@ import { MulterModule } from '@nestjs/platform-express';
 import { extname } from 'path';
 import * as multer from 'multer';
 import { v4 as uuid } from 'uuid';
+import { ProfileModel } from 'src/profiles/entities/profile.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserModel]),
+    TypeOrmModule.forFeature([UserModel, ProfileModel]),
     PassportModule,
     MulterModule.register({
       limits: {

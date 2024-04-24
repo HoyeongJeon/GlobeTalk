@@ -35,6 +35,14 @@ export class ChatsService {
       .orderBy('RAND()')
       .getOne();
 
+    // const user = await this.userRepository.findOne({
+    //   where: {
+    //     Profile: recommendedUser,
+    //   },
+    // });
+
+    console.log(recommendedUser);
+
     return recommendedUser;
   }
 }

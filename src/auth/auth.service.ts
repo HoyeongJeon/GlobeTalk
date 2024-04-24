@@ -7,12 +7,15 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { ProfileModel } from 'src/profiles/entities/profile.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserModel)
     private readonly userRepository: Repository<UserModel>,
+    @InjectRepository(ProfileModel)
+    private readonly profileRepository: Repository<ProfileModel>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
   ) {}
@@ -27,9 +30,14 @@ export class AuthService {
   }
 
   async duplicatedNicknameCheck(nickname: string) {
-    const duplicatedNickname = await this.userRepository.findOne({
+    // const duplicatedNickname = await this.userRepository.findOne({
+    //   where: { nickname },
+    // });
+
+    const duplicatedNickname = await this.profileRepository.findOne({
       where: { nickname },
     });
+
     if (duplicatedNickname) {
       throw new BadRequestException('이미 사용 중인 닉네임입니다.');
     }
@@ -61,10 +69,10 @@ export class AuthService {
 
     const userObj = this.userRepository.create({
       email,
-      nickname,
       country,
       password: hashedPassword,
       Profile: {
+        nickname,
         introduce,
         major,
         language,
@@ -79,7 +87,7 @@ export class AuthService {
 
     return {
       email: newUser.email,
-      nickname: newUser.nickname,
+      nickname: newUser.Profile.nickname,
     };
   }
 
