@@ -37,4 +37,12 @@ export class ChatsController {
     const result = await this.redisService.sendChatRequest(user.sub, targetId);
     return result;
   }
+
+  // 내가 보낸 채팅 요청 확인
+  @Get('myRequest')
+  async getMyRequest(@Request() req) {
+    const user = req.user;
+    const result = await this.redisService.checkMyChatRequest(user.sub);
+    return result;
+  }
 }
