@@ -5,6 +5,12 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors({
+    origin: true,
+    credentials: true,
+    exposedHeaders: ['Authorization'],
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // 요청 데이터를 해당 타입으로 변환
