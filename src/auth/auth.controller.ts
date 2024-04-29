@@ -23,7 +23,14 @@ export class AuthController {
     @Body() signUpDto: SignUpDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
-    console.log(signUpDto);
+    const { email } = signUpDto;
+    if (email.split('@')[1] !== 'dankook.ac.kr') {
+      return {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Only Dankook University email is allowed',
+      };
+    }
+
     const result = await this.authService.signup(signUpDto, file?.filename);
     return {
       status: HttpStatus.OK,
