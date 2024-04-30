@@ -41,7 +41,7 @@ export class SignUpDto extends PickType(UserModel, [
   @IsNotEmpty()
   major: string;
 
-  @IsArray()
+  @IsString()
   @IsNotEmpty()
   language: string[];
 
@@ -49,8 +49,4 @@ export class SignUpDto extends PickType(UserModel, [
   @IsNotEmpty()
   @IsIn([State.EXCHANGE, State.NORMAL]) // enum을 사용할 때는 @IsEnum을 사용하지 않고 @IsIn을 사용해야 한다.
   state: State;
-
-  @IsString()
-  @IsNotEmpty()
-  imageUrl: string;
 }
