@@ -39,10 +39,22 @@ export class ChatsController {
   }
 
   // 내가 보낸 채팅 요청 확인
-  @Get('myRequest')
+  @Get('myRequests')
   async getMyRequest(@Request() req) {
     const user = req.user;
     const result = await this.redisService.checkMyChatRequest(user.sub);
+
+    return result;
+  }
+
+  // 내가 받은 채팅 요청 확인
+  @Get('toMe')
+  async getRequestsToMe(@Request() req) {
+    const user = req.user;
+    const result = await this.redisService.checkChatRequestToMe(user.sub);
+    if (result.length === 0) {
+      return '받은 채팅 요청이 없습니다.';
+    }
 
     return result;
   }
