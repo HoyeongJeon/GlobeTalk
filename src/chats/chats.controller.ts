@@ -43,6 +43,7 @@ export class ChatsController {
   async getMyRequest(@Request() req) {
     const user = req.user;
     const result = await this.redisService.checkMyChatRequest(user.sub);
+
     return result;
   }
 }
