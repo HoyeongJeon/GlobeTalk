@@ -18,7 +18,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  @UseInterceptors(FileInterceptor('profile'))
+  @UseInterceptors(FileInterceptor('imageUrl'))
   async signup(
     @Body() signUpDto: SignUpDto,
     @UploadedFile() file?: Express.Multer.File,

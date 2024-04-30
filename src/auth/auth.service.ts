@@ -51,7 +51,6 @@ export class AuthService {
       language,
       state,
     } = signUpDto;
-
     await this.duplicatedEmailCheck(email);
     await this.duplicatedNicknameCheck(nickname);
 
