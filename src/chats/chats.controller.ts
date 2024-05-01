@@ -58,4 +58,10 @@ export class ChatsController {
 
     return result;
   }
+
+  // 채팅 요청 수락
+  @Post('toMe')
+  async acceptChatRequest(@Request() req) {
+    const user = req.user;
+  }
 }

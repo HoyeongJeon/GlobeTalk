@@ -1,8 +1,17 @@
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { ChatModel } from 'src/chats/entities/chat.entity';
 import { BaseModel } from 'src/common/entities/base.entity';
+import { MessageModel } from 'src/messages/entities/messages.entity';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 @Entity({
   name: 'users',
@@ -43,4 +52,10 @@ export class UserModel extends BaseModel {
   })
   @JoinColumn()
   Profile: ProfileModel;
+
+  @ManyToMany(() => ChatModel, (chat) => chat.Users)
+  Chats: ChatModel[];
+
+  @OneToMany(() => MessageModel, (message) => message.Author)
+  Messages: MessageModel[];
 }

@@ -4,6 +4,7 @@ import { UserModel } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { State } from 'src/common/enums/state.enum';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
+import { CreateChatDto } from './dto/create-chat.dto';
 @Injectable()
 export class ChatsService {
   constructor(
@@ -43,4 +44,7 @@ export class ChatsService {
 
     return recommendedUser;
   }
+
+  // 채팅방 생성
+  async createChat(createChatDto: CreateChatDto) {}
 }
