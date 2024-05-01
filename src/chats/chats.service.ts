@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { State } from 'src/common/enums/state.enum';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
 import { CreateChatDto } from './dto/create-chat.dto';
+import { ChatModel } from './entities/chat.entity';
 @Injectable()
 export class ChatsService {
   constructor(
@@ -12,6 +13,8 @@ export class ChatsService {
     private readonly userRepository: Repository<UserModel>,
     @InjectRepository(ProfileModel)
     private readonly profileRepository: Repository<ProfileModel>,
+    @InjectRepository(ChatModel)
+    private readonly chatRepository: Repository<ChatModel>,
   ) {}
 
   // 랜덤 채팅 상대 추천
@@ -46,5 +49,13 @@ export class ChatsService {
   }
 
   // 채팅방 생성
-  async createChat(createChatDto: CreateChatDto) {}
+  async createChat(createChatDto: CreateChatDto) {
+    const chat = await this.chatRepository.save({
+      Users: createChatDto.userIds.map((id) => ({ id })),
+    });
+
+    return await this.chatRepository.findOne({
+      where: { id: chat.id },
+    });
+  }
 }
