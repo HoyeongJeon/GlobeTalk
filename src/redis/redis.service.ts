@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import IORedis from 'ioredis';
+import { ChatsService } from 'src/chats/chats.service';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -37,7 +38,6 @@ export class RedisService {
 
     await this.redisClient.sadd(`From_${userId}`, `${targetId}`);
     await this.redisClient.sadd(`To_${targetId}`, `${userId}`);
-    return `${userId}님이 ${targetId}님에게 채팅을 요청했습니다.`;
   }
 
   /**
@@ -74,5 +74,24 @@ export class RedisService {
     );
 
     return users;
+  }
+
+  /**
+   * 채팅 요청 답변
+   * @param userId 대상자 ID
+   * @param targetId 신청자 ID
+   * @param isAccept 수락 여부
+   * @returns
+   */
+  async removeChatRequest(userId: number, targetId: number) {
+    const isExist = await this.redisClient.sismember(
+      `From_${targetId}`,
+      `${userId}`,
+    );
+    if (!isExist) {
+      return '해당 요청이 존재하지 않습니다.';
+    }
+    await this.redisClient.srem(`From_${targetId}`, `${userId}`);
+    await this.redisClient.srem(`To_${userId}`, `${targetId}`);
   }
 }

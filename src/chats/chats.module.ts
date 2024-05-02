@@ -12,6 +12,7 @@ import { ChatModel } from './entities/chat.entity';
     TypeOrmModule.forFeature([UserModel, ProfileModel, ChatModel]),
     RedisModule,
   ],
+  exports: [ChatsService],
   controllers: [ChatsController],
   providers: [ChatsService],
 })
