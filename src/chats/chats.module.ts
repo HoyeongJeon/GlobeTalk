@@ -5,9 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModel } from 'src/users/entities/user.entity';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
 import { RedisModule } from 'src/redis/redis.module';
+import { ChatModel } from './entities/chat.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserModel, ProfileModel]), RedisModule],
+  imports: [
+    TypeOrmModule.forFeature([UserModel, ProfileModel, ChatModel]),
+    RedisModule,
+  ],
+  exports: [ChatsService],
   controllers: [ChatsController],
   providers: [ChatsService],
 })

@@ -2,11 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Redis } from 'ioredis';
 import IORedis from 'ioredis';
+import { ChatsService } from 'src/chats/chats.service';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class RedisService {
   private readonly redisClient: IORedis;
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+  ) {
     this.redisClient = new IORedis({
       host: this.configService.get<string>('REDIS_HOST'),
       port: this.configService.get<number>('REDIS_PORT'),
@@ -26,13 +31,13 @@ export class RedisService {
    * @param targetId 대상자 ID
    */
   async sendChatRequest(userId: number, targetId: number) {
-    /**
-     * userId를 key로 하여 targetId를 value로 저장
-     * 객체로 저장
-     */
-    // const result = await this.redisClient.set(`${userId}`, targetId);
+    const isUserExist = await this.usersService.getProfile(targetId);
+    if (!isUserExist) {
+      return '유저가 존재하지 않습니다.';
+    }
+
     await this.redisClient.sadd(`From_${userId}`, `${targetId}`);
-    return `${userId}님이 ${targetId}님에게 채팅을 요청했습니다.`;
+    await this.redisClient.sadd(`To_${targetId}`, `${userId}`);
   }
 
   /**
@@ -41,7 +46,16 @@ export class RedisService {
    * @returns
    */
   async checkMyChatRequest(userId: number) {
-    return await this.redisClient.smembers(`From_${userId}`);
+    const reqs = await this.redisClient.smembers(`From_${userId}`);
+
+    const users = await Promise.all(
+      reqs.map(async (req) => {
+        const user = await this.usersService.getProfile(Number(req));
+        return user.Profile.nickname;
+      }),
+    );
+
+    return users;
   }
 
   /**
@@ -49,4 +63,35 @@ export class RedisService {
    * @param userId 대상자 ID
    * @returns
    */
+  async checkChatRequestToMe(userId: number) {
+    const reqs = await this.redisClient.smembers(`To_${userId}`);
+
+    const users = await Promise.all(
+      reqs.map(async (req) => {
+        const user = await this.usersService.getProfile(Number(req));
+        return user.Profile.nickname;
+      }),
+    );
+
+    return users;
+  }
+
+  /**
+   * 채팅 요청 답변
+   * @param userId 대상자 ID
+   * @param targetId 신청자 ID
+   * @param isAccept 수락 여부
+   * @returns
+   */
+  async removeChatRequest(userId: number, targetId: number) {
+    const isExist = await this.redisClient.sismember(
+      `From_${targetId}`,
+      `${userId}`,
+    );
+    if (!isExist) {
+      return '해당 요청이 존재하지 않습니다.';
+    }
+    await this.redisClient.srem(`From_${targetId}`, `${userId}`);
+    await this.redisClient.srem(`To_${userId}`, `${targetId}`);
+  }
 }
