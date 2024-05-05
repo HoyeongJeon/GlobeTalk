@@ -72,4 +72,20 @@ export class ChatsController {
     );
     return result;
   }
+
+  // 채팅방 목록 확인
+  @Get('rooms')
+  async getChatRooms(@Request() req) {
+    const user = req.user;
+    const rooms = await this.chatsService.getChatRooms(user.sub);
+    return rooms;
+  }
+
+  // 채팅방 입장
+  @Get('rooms/:roomId')
+  async enterChatRoom(@Param('roomId') roomId: number, @Request() req) {
+    const user = req.user;
+    const result = await this.chatsService.enterChatRoom(user.sub, roomId);
+    return result;
+  }
 }

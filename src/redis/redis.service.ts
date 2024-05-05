@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Redis } from 'ioredis';
 import IORedis from 'ioredis';
-import { ChatsService } from 'src/chats/chats.service';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
