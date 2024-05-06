@@ -1,11 +1,5 @@
 import { PickType } from '@nestjs/mapped-types';
-import {
-  IsArray,
-  IsIn,
-  IsNotEmpty,
-  IsString,
-  IsStrongPassword,
-} from 'class-validator';
+import { IsIn, IsNotEmpty, IsString, IsStrongPassword } from 'class-validator';
 import { UserModel } from 'src/users/entities/user.entity';
 
 enum State {

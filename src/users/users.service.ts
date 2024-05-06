@@ -47,15 +47,22 @@ export class UsersService {
         id: user.Profile.id,
       },
     });
-    // await this.profileRepository.update(profile.id, {
-    //   ...editProfileDto,
-    // });
 
-    // return await this.profileRepository.findOne({
-    //   where: {
-    //     User: user,
-    //   },
-    // });
+    if (!profile) {
+      throw new BadRequestException('프로필이 존재하지 않습니다.');
+    }
+
+    // 같은 이름 중복 체크
+    const isExist = await this.profileRepository.findOne({
+      where: {
+        nickname: editProfileDto.nickname,
+      },
+    });
+
+    if (isExist) {
+      throw new BadRequestException('이미 존재하는 닉네임입니다.');
+    }
+
     const upadatedImgUrl = imageUrl ? imageUrl : profile.imageUrl;
     return await this.profileRepository.save({
       ...profile,
