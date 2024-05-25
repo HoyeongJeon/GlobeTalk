@@ -102,7 +102,12 @@ export class AuthService {
       );
     }
     const tokens = await this.genUserToken(user);
-    return tokens;
+    return {
+      user: {
+        id: user.id,
+      },
+      ...tokens,
+    };
   }
 
   async genUserToken(user: Pick<UserModel, 'email' | 'id'>) {

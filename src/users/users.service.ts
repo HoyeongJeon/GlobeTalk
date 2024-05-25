@@ -59,7 +59,7 @@ export class UsersService {
       },
     });
 
-    if (isExist) {
+    if (isExist && isExist.nickname !== profile.nickname) {
       throw new BadRequestException('이미 존재하는 닉네임입니다.');
     }
 
