@@ -12,15 +12,13 @@ export class MessagesService {
     @InjectRepository(MessageModel)
     private readonly messageRepository: Repository<MessageModel>,
   ) {}
-  async createMessage(createMessageDto: CreateMessageDto, @Request() req) {
-    console.log('req.user.id');
-    console.log(req);
+  async createMessage(createMessageDto: CreateMessageDto, authorId: number) {
     const message = await this.messageRepository.save({
       Chat: {
         id: createMessageDto.chatId,
       },
       Author: {
-        id: req.sub,
+        id: authorId,
       },
       message: createMessageDto.message,
     });
@@ -42,5 +40,21 @@ export class MessagesService {
       },
       relations: ['Author', 'Chat'],
     });
+  }
+
+  async getCurrentMessage(chatId: number) {
+    const currentMessage = await this.messageRepository.find({
+      where: {
+        Chat: {
+          id: chatId,
+        },
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 1,
+    });
+
+    return currentMessage;
   }
 }

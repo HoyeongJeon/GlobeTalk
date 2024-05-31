@@ -96,15 +96,12 @@ export class ChatsService {
 
     if (isAccept) {
       await this.redisService.removeChatRequest(userId, targetId);
-      console.log('수락');
-      console.log(`userId: ${userId}, targetId: ${targetId}`);
       const chat = await this.createChat({
         userIds: [userId, targetId],
       });
 
       return chat;
     } else {
-      console.log('거절');
       await this.redisService.removeChatRequest(userId, targetId);
       return '채팅 요청을 거절했습니다.';
     }
@@ -174,7 +171,7 @@ export class ChatsService {
     if (!room.Users.find(({ id }) => id === userId)) {
       return '채팅방에 참여할 수 없습니다.';
     }
-    console.log(room);
+    room.Users = room.Users.filter(({ id }) => id !== userId);
     return room;
   }
 }

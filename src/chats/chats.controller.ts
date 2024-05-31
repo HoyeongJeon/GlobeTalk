@@ -80,7 +80,24 @@ export class ChatsController {
   async getChatRooms(@Request() req) {
     const user = req.user;
     const rooms = await this.chatsService.getChatRooms(user.sub);
-    return rooms;
+
+    const addCurrentMessageToRooms = async (rooms) => {
+      const roomWithCurrentMessage = await Promise.all(
+        rooms.map(async (room) => {
+          const currentMessage = await this.messageService.getCurrentMessage(
+            room.id,
+          );
+          room.currentMessage = currentMessage;
+          return room;
+        }),
+      );
+
+      return roomWithCurrentMessage;
+    };
+
+    let roomsWithCurrentMessage = await addCurrentMessageToRooms(rooms);
+
+    return roomsWithCurrentMessage;
   }
 
   // 채팅방 입장
@@ -92,6 +109,7 @@ export class ChatsController {
     return { result, messages };
   }
 
+  // 메시지 전송
   @Post('rooms/:roomId')
   async sendMessage(
     @Param('roomId') roomId: number,

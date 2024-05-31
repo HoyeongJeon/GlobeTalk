@@ -14,7 +14,6 @@ export abstract class BaseModel {
   })
   id: number;
 
-  @Exclude()
   @CreateDateColumn({
     type: 'timestamp',
   })
