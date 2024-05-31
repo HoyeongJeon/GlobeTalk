@@ -31,8 +31,11 @@ export class ChatsService {
     const recommendedState =
       state === State.NORMAL ? State.EXCHANGE : State.NORMAL;
 
+    // leftjoin 코드 수정 필요 User 다 가져오지 않고 country만 가져오기
     const recommendedUser = await this.profileRepository
       .createQueryBuilder('profile')
+      .leftJoinAndSelect('profile.User', 'user')
+      .addSelect('user.country')
       .where('profile.state = :recommendedState', { recommendedState })
       .orderBy('RAND()')
       .getOne();
@@ -117,5 +120,58 @@ export class ChatsService {
     return await this.chatRepository.findOne({
       where: { id: chat.id },
     });
+  }
+
+  /**
+   * 채팅방 목록 확인
+   * @param userId 사용자 ID
+   * @returns
+   * */
+  async getChatRooms(userId: number) {
+    const rooms = await this.chatRepository.find({
+      where: { Users: { id: userId } },
+    });
+    const filteredRooms = await Promise.all(
+      rooms.map(async (room) => {
+        const myRoom = await this.chatRepository.findOne({
+          where: { id: room.id },
+          relations: ['Users'],
+        });
+
+        const filteredUser = myRoom.Users.filter((user) => {
+          delete user.password;
+          return user.id !== userId;
+        });
+        return { ...myRoom, Users: filteredUser };
+      }),
+    );
+
+    return filteredRooms;
+  }
+
+  /**
+   * 채팅방 입장
+   * @param userId 사용자 ID
+   * @param roomId 채팅방 ID
+   * @returns
+   * */
+  async enterChatRoom(userId: number, roomId: number) {
+    const room = await this.chatRepository.findOne({
+      where: { id: roomId },
+      relations: [
+        'Users',
+        'Messages',
+        'Messages.Author',
+        'Messages.Author.Profile',
+      ],
+    });
+    if (!room) {
+      return '채팅방이 존재하지 않습니다.';
+    }
+    if (!room.Users.find(({ id }) => id === userId)) {
+      return '채팅방에 참여할 수 없습니다.';
+    }
+    room.Users = room.Users.filter(({ id }) => id !== userId);
+    return room;
   }
 }

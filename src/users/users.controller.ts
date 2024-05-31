@@ -4,14 +4,16 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  Patch,
+  Put,
   Request,
   UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { EditProfileDto } from './dtos/editProfile.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -29,14 +31,16 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch('me')
+  // @UseInterceptors(FileInterceptor('imageUrl'))
+  @Put('me')
   async editProfile(
     @Request() req,
     @Body() editProfileDto: EditProfileDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
+    const user = req.user;
     return await this.usersService.editProfile(
-      req.user.sub,
+      user.sub,
       editProfileDto,
       file?.filename,
     );

@@ -24,7 +24,8 @@ import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
 @WebSocketGateway({
-  namespace: 'chats',
+  // namespace: /^\/chats\/.+$/,
+  namespace: /^\/chats\/\d+$/,
 })
 export class ChatsGateway implements OnGatewayConnection {
   constructor(
@@ -38,21 +39,28 @@ export class ChatsGateway implements OnGatewayConnection {
   @UseGuards(WsBearerTokenGuard)
   handleConnection(socket: Socket) {
     console.log('New connection', socket.id);
-    const rawToken = socket.handshake.headers.authorization;
+    const rawToken = socket.handshake.query.token as string;
     if (!rawToken) {
       throw new WsException('Token not found');
     }
+    const chatIds = socket.nsp.name.split('/').pop();
     try {
       const jwtSecret = this.configService.get<string>('JWT_SECRET');
       if (typeof jwtSecret !== 'string') {
         throw new WsException('JWT_SECRET not found');
       }
-      const token = rawToken.split(' ')[1];
-      const decoded = jwt.verify(token as string, jwtSecret);
+      const decoded = jwt.verify(rawToken as string, jwtSecret);
       socket['userId'] = decoded['sub'];
+      socket.join(chatIds);
     } catch (error) {
       socket.disconnect();
     }
+  }
+
+  @SubscribeMessage('message')
+  handleMessage(socket: Socket, data: any): void {
+    console.log('message', data);
+    this.server.emit('message', data);
   }
 
   @UsePipes(
@@ -69,13 +77,13 @@ export class ChatsGateway implements OnGatewayConnection {
     this.server.emit('chat_created', chat);
   }
 
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
+  // @UsePipes(
+  //   new ValidationPipe({
+  //     transform: true, // dto에 정의된 타입으로 변환
+  //     whitelist: true, // dto에 정의되지 않은 속성 제거
+  //     forbidNonWhitelisted: true, // dto에 정의되지 않은 속성이 있을 경우 예외 발생
+  //   }),
+  // )
   @UseFilters(WsExceptionFilter)
   @SubscribeMessage('send_message')
   async sendMessage(
@@ -86,11 +94,12 @@ export class ChatsGateway implements OnGatewayConnection {
       createMessageDto,
       socket['userId'],
     );
-    socket.to(createMessageDto.chatId.toString()).emit('message_sent', {
+
+    socket.to(message.Chat.id.toString()).emit('receive_message', {
       id: message.id,
-      author: {
+      Author: {
         id: message.Author.id,
-        username: message.Author.Profile.nickname,
+        Profile: message.Author.Profile,
       },
       message: message.message,
       createdAt: message.createdAt,

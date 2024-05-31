@@ -1,7 +1,12 @@
-import { IsIn, IsOptional, IsString } from 'class-validator';
-import { State } from 'src/common/enums/state.enum';
+import { PartialType } from '@nestjs/mapped-types';
+import { IsOptional, IsString } from 'class-validator';
+import { SignUpDto } from 'src/auth/dto/signUp.dto';
 
-export class EditProfileDto {
+export class EditProfileDto extends PartialType(SignUpDto) {
+  @IsOptional()
+  @IsString()
+  nickname?: string;
+
   @IsOptional()
   @IsString()
   introduce?: string;
@@ -13,13 +18,4 @@ export class EditProfileDto {
   @IsOptional()
   @IsString({ each: true })
   language?: string[];
-
-  @IsOptional()
-  @IsString()
-  @IsIn([State.EXCHANGE, State.NORMAL])
-  state?: string;
-
-  @IsOptional()
-  @IsString()
-  imageUrl?: string;
 }

@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Redis } from 'ioredis';
 import IORedis from 'ioredis';
-import { ChatsService } from 'src/chats/chats.service';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -65,11 +63,14 @@ export class RedisService {
    */
   async checkChatRequestToMe(userId: number) {
     const reqs = await this.redisClient.smembers(`To_${userId}`);
-
     const users = await Promise.all(
       reqs.map(async (req) => {
         const user = await this.usersService.getProfile(Number(req));
-        return user.Profile.nickname;
+
+        delete user.Profile.createdAt;
+        delete user.Profile.updatedAt;
+
+        return { ...user.Profile, country: user.country };
       }),
     );
 

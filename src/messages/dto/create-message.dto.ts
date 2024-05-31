@@ -6,5 +6,5 @@ export class CreateMessageDto extends PickType(MessageModel, [
   'message',
 ] as const) {
   @IsNumber()
-  chatId: number;
+  readonly chatId: number;
 }
