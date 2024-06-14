@@ -1,5 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { ReportModel } from 'src/admin/entities/report.entity';
 import { ChatModel } from 'src/chats/entities/chat.entity';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { MessageModel } from 'src/messages/entities/messages.entity';
@@ -9,6 +10,7 @@ import {
   Entity,
   JoinColumn,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
