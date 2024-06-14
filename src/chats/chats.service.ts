@@ -174,4 +174,11 @@ export class ChatsService {
     room.Users = room.Users.filter(({ id }) => id !== userId);
     return room;
   }
+
+  async isReportedChat(chatId: number) {
+    const chat = await this.chatRepository.findOne({
+      where: { id: chatId },
+    });
+    return chat.IsReported;
+  }
 }
