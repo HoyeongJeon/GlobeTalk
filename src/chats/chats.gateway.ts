@@ -90,6 +90,14 @@ export class ChatsGateway implements OnGatewayConnection {
     @MessageBody() createMessageDto: CreateMessageDto,
     @ConnectedSocket() socket: Socket,
   ) {
+    const isReported = await this.chatsService.isReportedChat(
+      createMessageDto.chatId,
+    );
+
+    if (isReported) {
+      throw new WsException('This chat is reported');
+    }
+
     const message = await this.messagesService.createMessage(
       createMessageDto,
       socket['userId'],

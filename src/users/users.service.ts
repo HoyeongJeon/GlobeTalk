@@ -15,6 +15,11 @@ export class UsersService {
     private readonly profileRepository: Repository<ProfileModel>,
   ) {}
 
+  async getAllUsers() {
+    const users = await this.userRepository.find({ relations: ['Profile'] });
+    return users;
+  }
+
   async getProfile(userId: number) {
     const user = await this.userRepository.findOne({
       where: {

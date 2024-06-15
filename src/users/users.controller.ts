@@ -15,11 +15,11 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { EditProfileDto } from './dtos/editProfile.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMyProfile(@Request() req) {
     return await this.usersService.getProfile(req.user.sub);
@@ -30,8 +30,7 @@ export class UsersController {
     return await this.usersService.getProfile(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(FileInterceptor('imageUrl'))
+  @UseInterceptors(FileInterceptor('imageUrl'))
   @Put('me')
   async editProfile(
     @Request() req,

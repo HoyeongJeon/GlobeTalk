@@ -1,7 +1,15 @@
+import { ReportModel } from 'src/admin/entities/report.entity';
 import { BaseModel } from 'src/common/entities/base.entity';
 import { MessageModel } from 'src/messages/entities/messages.entity';
 import { UserModel } from 'src/users/entities/user.entity';
-import { Entity, JoinTable, ManyToMany, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 
 @Entity('chats')
 export class ChatModel extends BaseModel {
@@ -11,4 +19,11 @@ export class ChatModel extends BaseModel {
 
   @OneToMany(() => MessageModel, (message) => message.Chat)
   Messages: MessageModel[];
+
+  @OneToOne(() => ReportModel, (report) => report.Chat)
+  @Column('boolean', {
+    nullable: false,
+    default: false,
+  })
+  IsReported: boolean;
 }
