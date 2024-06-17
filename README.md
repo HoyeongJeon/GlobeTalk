@@ -3,6 +3,7 @@
 ## 1. 프로젝트 소개
 
 교환학생과 일반학생 사이의 랜덤채팅 어플리케이션
+Frontend: https://github.com/HoyeongJeon/GlobeTalk_FE
 
 ### 2. 가이드 문서
 
