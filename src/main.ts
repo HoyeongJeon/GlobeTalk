@@ -7,12 +7,7 @@ import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-
-  // app.enableCors({
-  //   origin: ['http://localhost:3000', 'http://localhost:5173'],
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  //   credentials: true,
-  // });
+  const PORT = process.env.PORT || 3000;
 
   const corsOptions = {
     origin: ['http://localhost:5173', 'http://localhost:3001'],
@@ -42,6 +37,8 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(3000);
+  await app.listen(PORT, () => {
+    console.log(`Running API in MODE: ${process.env.NODE_ENV} on PORT ${PORT}`);
+  });
 }
 bootstrap();
