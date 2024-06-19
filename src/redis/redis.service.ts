@@ -11,7 +11,8 @@ export class RedisService {
     private readonly usersService: UsersService,
   ) {
     this.redisClient = new IORedis({
-      host: this.configService.get<string>('REDIS_HOST'),
+      // host: this.configService.get<string>('REDIS_HOST'),
+      host: 'globetalk_be_redis',
       port: this.configService.get<number>('REDIS_PORT'),
       //   password: this.configService.get<string>('REDIS_PASSWORD'),
     });
