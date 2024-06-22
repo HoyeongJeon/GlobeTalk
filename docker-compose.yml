@@ -8,6 +8,11 @@ services:
     environment:
       - PORT=3000
       - NODE_ENV=development
+      - DOCKER_MYSQL_HOST=globetalk_be_mysql
+      - DOCKER_MYSQL_DATABASE=globetalk
+      - DOCKER_MYSQL_PORT=3307
+      - DOCKER_MYSQL_USERNAME=user
+      - DOCKER_MYSQL_PASSWORD=user123
     volumes:
       - ./src:/usr/src/app/src
   globetalk_be_mysql:
