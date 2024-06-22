@@ -14,7 +14,9 @@ import { RedisModule } from './redis/redis.module';
 import { AdminModule } from './admin/admin.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ConfigService } from '@nestjs/config';
 
+const configService = new ConfigService();
 @Module({
   imports: [
     // ServeStaticModule.forRoot({
@@ -26,21 +28,12 @@ import { join } from 'path';
       envFilePath: '.env',
     }),
     TypeOrmModule.forRoot({
-      // type: 'mysql',
-      // host: process.env.MYSQL_HOST,
-      // port: Number(process.env.MYSQL_PORT),
-      // username: process.env.MYSQL_USERNAME,
-      // password: process.env.MYSQL_PASSWORD,
-      // database: process.env.MYSQL_DATABASE,
-      // autoLoadEntities: true,
-      // synchronize: true,
       type: 'mysql',
-      host: 'globetalk_be_mysql',
-      port: 3307,
-      database: 'globetalk',
-      // entities: ['dist/**/*.entity{.ts,.js}'],
-      username: 'user',
-      password: 'user123',
+      host: configService.get('DOCKER_MYSQL_HOST'),
+      port: configService.get<number>('DOCKER_MYSQL_PORT'),
+      database: configService.get('DOCKER_MYSQL_DATABASE'),
+      username: configService.get('DOCKER_MYSQL_USERNAME'),
+      password: configService.get('DOCKER_MYSQL_PASSWORD'),
       autoLoadEntities: true,
       synchronize: true,
     }),
