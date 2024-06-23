@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ReportUserDto } from './dto/report-user.dto';
 import { UsersService } from 'src/users/users.service';
+import { PaginateUserDto } from './dto/paginate-user.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -18,14 +19,13 @@ export class AdminController {
 
   @Post('/report')
   async postReport(@Body() reportUserDto: ReportUserDto) {
-    console.log(reportUserDto);
     await this.adminService.reportUser(reportUserDto);
     return '신고 완료!';
   }
 
   @Get('/users')
-  async getAllUsers() {
-    const users = await this.usersService.getAllUsers();
+  async getAllUsers(@Query() query: PaginateUserDto) {
+    const users = await this.usersService.paginateUsers(query);
     return users;
   }
 }
