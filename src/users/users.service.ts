@@ -1,11 +1,10 @@
 import { BadRequestException, Body, Injectable, Query } from '@nestjs/common';
 import { UserModel } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
 import { EditProfileDto } from './dtos/editProfile.dto';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
 import { PaginateUserDto } from 'src/admin/dto/paginate-user.dto';
-import { url } from 'inspector';
 
 @Injectable()
 export class UsersService {
@@ -18,10 +17,16 @@ export class UsersService {
   ) {}
 
   async paginateUsers(dto: PaginateUserDto) {
+    const where: FindOptionsWhere<UserModel> = {};
+
+    if (dto.where__id_less_than) {
+      where.id = LessThan(dto.where__id_less_than);
+    } else if (dto.where__id_more_than) {
+      where.id = MoreThan(dto.where__id_more_than);
+    }
+
     const users = await this.userRepository.find({
-      where: {
-        id: MoreThan(dto.where__id_more_than ?? 0),
-      },
+      where,
       order: {
         createdAt: dto.order__createdAt,
       },
@@ -38,14 +43,22 @@ export class UsersService {
 
     if (nextUrl) {
       for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than') {
+        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
           nextUrl.searchParams.append(key, dto[key]);
         }
       }
-      nextUrl.searchParams.append(
-        'where__id_more_than',
-        lastUser.id.toString(),
-      );
+      console.log('hello~!');
+      let key = null;
+
+      if (dto.order__createdAt === 'ASC') {
+        console.log('here - asc');
+        key = 'where__id_more_than';
+      } else {
+        console.log('here - desc');
+        key = 'where__id_less_than';
+      }
+
+      nextUrl.searchParams.append(key, lastUser.id.toString());
     }
 
     return {
