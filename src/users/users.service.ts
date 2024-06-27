@@ -1,11 +1,10 @@
 import { BadRequestException, Body, Injectable, Query } from '@nestjs/common';
 import { UserModel } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
 import { EditProfileDto } from './dtos/editProfile.dto';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
 import { PaginateUserDto } from 'src/admin/dto/paginate-user.dto';
-import { url } from 'inspector';
 
 @Injectable()
 export class UsersService {
@@ -18,10 +17,44 @@ export class UsersService {
   ) {}
 
   async paginateUsers(dto: PaginateUserDto) {
-    const users = await this.userRepository.find({
-      where: {
-        id: MoreThan(dto.where__id_more_than ?? 0),
-      },
+    if (dto.page) {
+      return this.pagePaginateUsers(dto);
+    } else {
+      return this.cursorPaginateUsers(dto);
+    }
+  }
+
+  async pagePaginateUsers(dto: PaginateUserDto) {
+    /**
+     * data : users[]
+     * total : number
+     */
+    const [data, total]: [UserModel[], number] =
+      await this.userRepository.findAndCount({
+        skip: dto.take * (dto.page - 1),
+        take: dto.take,
+        order: {
+          createdAt: dto.order__createdAt,
+        },
+      });
+
+    return {
+      data,
+      total,
+    };
+  }
+
+  async cursorPaginateUsers(dto: PaginateUserDto) {
+    const where: FindOptionsWhere<UserModel> = {};
+
+    if (dto.where__id_less_than) {
+      where.id = LessThan(dto.where__id_less_than);
+    } else if (dto.where__id_more_than) {
+      where.id = MoreThan(dto.where__id_more_than);
+    }
+
+    const users: UserModel[] = await this.userRepository.find({
+      where,
       order: {
         createdAt: dto.order__createdAt,
       },
@@ -30,22 +63,30 @@ export class UsersService {
 
     // 유저가 0 명보다 많으면, 마지막 유저를 가져오고
     // 아니면 null 반환
-    const lastUser =
+    const lastUser: UserModel =
       users.length > 0 && users.length === dto.take
         ? users[users.length - 1]
         : null;
-    const nextUrl = lastUser && new URL('http://localhost:3000/admin/users');
+    const nextUrl: URL =
+      lastUser && new URL('http://localhost:3000/admin/users');
 
     if (nextUrl) {
       for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than') {
+        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
           nextUrl.searchParams.append(key, dto[key]);
         }
       }
-      nextUrl.searchParams.append(
-        'where__id_more_than',
-        lastUser.id.toString(),
-      );
+      let key: string | null = null;
+
+      if (dto.order__createdAt === 'ASC') {
+        console.log('here - asc');
+        key = 'where__id_more_than';
+      } else {
+        console.log('here - desc');
+        key = 'where__id_less_than';
+      }
+
+      nextUrl.searchParams.append(key, lastUser.id.toString());
     }
 
     return {
