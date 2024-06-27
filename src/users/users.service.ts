@@ -17,6 +17,34 @@ export class UsersService {
   ) {}
 
   async paginateUsers(dto: PaginateUserDto) {
+    if (dto.page) {
+      return this.pagePaginateUsers(dto);
+    } else {
+      return this.cursorPaginateUsers(dto);
+    }
+  }
+
+  async pagePaginateUsers(dto: PaginateUserDto) {
+    /**
+     * data : users[]
+     * total : number
+     */
+    const [data, total]: [UserModel[], number] =
+      await this.userRepository.findAndCount({
+        skip: dto.take * (dto.page - 1),
+        take: dto.take,
+        order: {
+          createdAt: dto.order__createdAt,
+        },
+      });
+
+    return {
+      data,
+      total,
+    };
+  }
+
+  async cursorPaginateUsers(dto: PaginateUserDto) {
     const where: FindOptionsWhere<UserModel> = {};
 
     if (dto.where__id_less_than) {
@@ -25,7 +53,7 @@ export class UsersService {
       where.id = MoreThan(dto.where__id_more_than);
     }
 
-    const users = await this.userRepository.find({
+    const users: UserModel[] = await this.userRepository.find({
       where,
       order: {
         createdAt: dto.order__createdAt,
@@ -35,11 +63,12 @@ export class UsersService {
 
     // 유저가 0 명보다 많으면, 마지막 유저를 가져오고
     // 아니면 null 반환
-    const lastUser =
+    const lastUser: UserModel =
       users.length > 0 && users.length === dto.take
         ? users[users.length - 1]
         : null;
-    const nextUrl = lastUser && new URL('http://localhost:3000/admin/users');
+    const nextUrl: URL =
+      lastUser && new URL('http://localhost:3000/admin/users');
 
     if (nextUrl) {
       for (const key of Object.keys(dto)) {
@@ -47,8 +76,7 @@ export class UsersService {
           nextUrl.searchParams.append(key, dto[key]);
         }
       }
-      console.log('hello~!');
-      let key = null;
+      let key: string | null = null;
 
       if (dto.order__createdAt === 'ASC') {
         console.log('here - asc');

@@ -54,6 +54,7 @@ export class UserModel extends BaseModel {
   })
   @JoinColumn()
   Profile: ProfileModel;
+  ㅇ;
 
   @ManyToMany(() => ChatModel, (chat) => chat.Users)
   Chats: ChatModel[];
