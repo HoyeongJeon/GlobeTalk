@@ -15,6 +15,7 @@ import { AdminModule } from './admin/admin.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { LogInterceptor } from './common/interceptor/log.interceptor';
 
 const configService = new ConfigService();
 @Module({
@@ -52,6 +53,10 @@ const configService = new ConfigService();
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LogInterceptor,
     },
   ],
 })
