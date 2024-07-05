@@ -21,11 +21,11 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      transform: true, // 요청 데이터를 해당 타입으로 변환
-      whitelist: true, // 요청 데이터의 타입을 검사
-      forbidNonWhitelisted: true, // 요청 데이터의 타입을 검사
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
       transformOptions: {
-        enableImplicitConversion: true, // DTO에 ClassValidator로 정의된 타입으로 자동 변환
+        enableImplicitConversion: true,
       },
     }),
   );
