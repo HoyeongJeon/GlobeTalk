@@ -5,6 +5,7 @@ import { FindOptionsWhere, LessThan, MoreThan, Repository } from 'typeorm';
 import { EditProfileDto } from './dtos/editProfile.dto';
 import { ProfileModel } from 'src/profiles/entities/profile.entity';
 import { PaginateUserDto } from 'src/admin/dto/paginate-user.dto';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class UsersService {
@@ -14,14 +15,16 @@ export class UsersService {
 
     @InjectRepository(ProfileModel)
     private readonly profileRepository: Repository<ProfileModel>,
+    private readonly commonService: CommonService,
   ) {}
 
   async paginateUsers(dto: PaginateUserDto) {
-    if (dto.page) {
-      return this.pagePaginateUsers(dto);
-    } else {
-      return this.cursorPaginateUsers(dto);
-    }
+    // if (dto.page) {
+    //   return this.pagePaginateUsers(dto);
+    // } else {
+    //   return this.cursorPaginateUsers(dto);
+    // }
+    return this.commonService.paginate(dto, this.userRepository, {}, 'users');
   }
 
   async pagePaginateUsers(dto: PaginateUserDto) {
@@ -47,10 +50,10 @@ export class UsersService {
   async cursorPaginateUsers(dto: PaginateUserDto) {
     const where: FindOptionsWhere<UserModel> = {};
 
-    if (dto.where__id_less_than) {
-      where.id = LessThan(dto.where__id_less_than);
-    } else if (dto.where__id_more_than) {
-      where.id = MoreThan(dto.where__id_more_than);
+    if (dto.where__id__less_than) {
+      where.id = LessThan(dto.where__id__less_than);
+    } else if (dto.where__id__more_than) {
+      where.id = MoreThan(dto.where__id__more_than);
     }
 
     const users: UserModel[] = await this.userRepository.find({
@@ -72,7 +75,7 @@ export class UsersService {
 
     if (nextUrl) {
       for (const key of Object.keys(dto)) {
-        if (key !== 'where__id_more_than' && key !== 'where__id_less_than') {
+        if (key !== 'where__id__more_than' && key !== 'where__id__less_than') {
           nextUrl.searchParams.append(key, dto[key]);
         }
       }
@@ -80,10 +83,10 @@ export class UsersService {
 
       if (dto.order__createdAt === 'ASC') {
         console.log('here - asc');
-        key = 'where__id_more_than';
+        key = 'where__id__more_than';
       } else {
         console.log('here - desc');
-        key = 'where__id_less_than';
+        key = 'where__id__less_than';
       }
 
       nextUrl.searchParams.append(key, lastUser.id.toString());
