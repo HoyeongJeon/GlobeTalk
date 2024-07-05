@@ -6,11 +6,13 @@ import { ReportModel } from './entities/report.entity';
 import { ChatModel } from 'src/chats/entities/chat.entity';
 import { UserModel } from 'src/users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([ReportModel, ChatModel, UserModel]),
     UsersModule,
+    CommonModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

@@ -8,6 +8,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { extname } from 'path';
 import * as multer from 'multer';
 import { v4 as uuid } from 'uuid';
+import { CommonModule } from 'src/common/common.module';
 @Module({
   exports: [UsersService],
   imports: [
@@ -34,6 +35,7 @@ import { v4 as uuid } from 'uuid';
         },
       }),
     }),
+    CommonModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
