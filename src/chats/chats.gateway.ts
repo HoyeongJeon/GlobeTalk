@@ -23,6 +23,17 @@ import { WsExceptionFilter } from 'src/common/exeption-filter/ws.exception-filte
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 
+@UsePipes(
+  new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transformOptions: {
+      enableImplicitConversion: true,
+    },
+  }),
+)
+@UseFilters(WsExceptionFilter)
 @WebSocketGateway({
   // namespace: /^\/chats\/.+$/,
   namespace: /^\/chats\/\d+$/,
@@ -59,32 +70,15 @@ export class ChatsGateway implements OnGatewayConnection {
 
   @SubscribeMessage('message')
   handleMessage(socket: Socket, data: any): void {
-    console.log('message', data);
     this.server.emit('message', data);
   }
 
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  )
-  @UseFilters(WsExceptionFilter)
   @SubscribeMessage('create_chat')
   async createChat(@MessageBody() createChatDto: CreateChatDto) {
     const chat = await this.chatsService.createChat(createChatDto);
     this.server.emit('chat_created', chat);
   }
 
-  // @UsePipes(
-  //   new ValidationPipe({
-  //     transform: true, // dto에 정의된 타입으로 변환
-  //     whitelist: true, // dto에 정의되지 않은 속성 제거
-  //     forbidNonWhitelisted: true, // dto에 정의되지 않은 속성이 있을 경우 예외 발생
-  //   }),
-  // )
-  @UseFilters(WsExceptionFilter)
   @SubscribeMessage('send_message')
   async sendMessage(
     @MessageBody() createMessageDto: CreateMessageDto,
